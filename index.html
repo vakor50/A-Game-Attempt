@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>A Game Attempt</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<style type="text/css">
+		
+	</style>
+</head>
+<body>
+	<canvas id="canvas" width="400" height="300">
+		This text is displayed if your browser does not support HTML5 Canvas.
+	</canvas>
+	<div class="container">
+		<div class="row">
+			<span id="output"></span>
+		</div>
+	</div>
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+	<script type="text/javascript">
+		var canvasWidth = 480;
+		var canvasHeight = 270;
+		var pieceSize = 30;
+		var myGamePiece;
+
+		var board = new Array(canvasHeight / pieceSize);
+		function clearBoard () {
+			board = new Array(canvasHeight / pieceSize);
+			for (var i = 0; i < board.length; i += 1) {
+				board[i] = new Array(canvasWidth / pieceSize)
+
+				for (var j = 0; j < board[i].length; j += 1) {
+					board[i][j] = 0;
+				}
+			}
+		}
+		
+		function logBoard () {
+			var str = ""
+			for (var i = 0; i < board.length; i += 1) {
+				for (var j = 0; j < board[i].length; j += 1) {
+					str += board[i][j] + " ";
+				}
+				str += "\n"
+			}
+			console.log(str)
+		}
+
+		function setPiece(x, y, type) {
+			switch (type) {
+				case "player":
+					board[x][y] = 1
+					break;
+				default:
+					board[x][y] = 0
+					break;
+			}
+		}
+
+		function displayBoard() {
+			
+		}
+
+
+		console.log(board)
+
+		var myGameArea = {
+			canvas : document.getElementById("canvas"),
+			start : function() {
+				this.canvas.width = canvasWidth;
+				this.canvas.height = canvasHeight;
+				this.context = this.canvas.getContext("2d");
+				document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+				// this.interval = setInterval(updateGameArea, 20);
+				updateGameArea();
+			},
+			clear : function() {
+				this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+				for (var i = 0; i < canvasWidth + pieceSize; i += pieceSize) {
+					this.context.beginPath();
+					this.context.moveTo(i,0);
+					this.context.lineTo(i,canvasHeight);
+					this.context.stroke();
+				}
+				for (var j = 0; j < canvasHeight + pieceSize; j += pieceSize) {
+					this.context.beginPath();
+					this.context.moveTo(0,j);
+					this.context.lineTo(canvasWidth,j);
+					this.context.stroke();
+				}
+			}
+		}
+
+		function startGame() {
+			myGamePiece = new component(pieceSize, pieceSize, "red", 0, 0);
+			myGameArea.start();
+		}
+
+		function component(width, height, color, x, y) {
+			this.width = width;
+			this.height = height;
+			this.speedX = 0;
+			this.speedY = 0;
+			this.x = x;
+			this.y = y;	
+			this.update = function() {
+				ctx = myGameArea.context;
+				ctx.fillStyle = color;
+				ctx.fillRect(this.x, this.y, this.width, this.height);
+			}
+			this.newPos = function() {
+				var endX = this.x + this.speedX,
+					endY = this.y + this.speedY;
+				if (endX > -1*this.width && endX < canvasWidth) {
+					this.x += this.speedX;
+				}
+				if (endY > -1*this.height && endY < canvasHeight) {
+					this.y += this.speedY;
+				}
+			}
+		}
+
+		function updateGameArea() {
+			myGameArea.clear();
+			myGamePiece.newPos();
+			myGamePiece.update();
+		}
+
+		function moveup() {
+			myGamePiece.speedX = 0;
+			myGamePiece.speedY = -30; 
+		}
+
+		function movedown() {
+			myGamePiece.speedX = 0;
+			myGamePiece.speedY = 30;
+		}
+
+		function moveleft() {
+			myGamePiece.speedX = -30;
+			myGamePiece.speedY = 0;
+		}
+
+		function moveright() {
+			myGamePiece.speedX = 30;
+			myGamePiece.speedY = 0;
+		}
+		$(document).ready(function () {
+			startGame();
+			var xTriggered = 0
+			$('body').keyup(function( event ) {
+				xTriggered++;
+				var msg = "Handler for .keyup() called " + xTriggered + " time(s).";
+				console.log( msg, "html" );
+				console.log( event );
+			}).keydown(function( event ) {
+				if ( event.which == 87 ) {
+					moveup()
+					updateGameArea()
+				} else if ( event.which == 83 ) {
+					movedown()
+					updateGameArea()
+				} else if ( event.which == 65 ) {
+					moveleft()
+					updateGameArea()
+				} else if ( event.which == 68 ) {
+					moveright()
+					updateGameArea()
+				}
+			});
+		});
+	</script>
+</body>
+</html>
