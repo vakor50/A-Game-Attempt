@@ -10,14 +10,14 @@ class Creature {
 		this.damage = damage;
 	}
 	logPrint() {
-		console.log(this.name + "(" + this.type + "): " + this.health + "hp");
+		console.log(this.name + "(" + this.type + "): " + this.health + "hp. @ (" + this.x + ", " + this.y + ")");
 		console.log("AC: " + this.armor + ", +" + this.attack + " to hit, +" + this.damage + " damage")
 	}
 }
 
 var p = new Creature(1,1,"Player",1,10,10,2,2);
 
-var numMonsters = 3;
+var numMonsters = 1;
 var monsters = [];
 
 ///////////////////////////////////////////////////////////
@@ -105,6 +105,7 @@ function setBoard() {
 	}
 	
 	logBoard();
+	convertToCanvas();
 }
 
 // initialize all pieces on the board
@@ -126,6 +127,7 @@ function initBoard() {
 	}
 
 	logBoard();
+	convertToCanvas();
 }
 
 
@@ -152,6 +154,30 @@ function isOpenPos(x, y) {
 			return true;
 	}
 }
+
+function handleAttack() {
+	// check around player for monster
+	for (var i = -1; i <= 1; i++) {
+		for (var j = -1; j <= 1; j++) {
+			// if a spot has a monster
+			if (isCreature(p.x+i, p.y+j, 2)) {
+				console.log("found creature")
+				for (var k = 0; k < monsters.length; k++) {
+					// attack the first monster next to player
+					if (monsters[k].x == p.x+i && monsters[k].y == p.y+j) {
+						monsters[k].health -= p.damage;
+						// if monster health drops below 0, delete it.
+						if (monsters[k].health <= 0) {
+							monsters.splice(k, 1)
+						}
+						return;
+					}
+				}
+			}
+		}
+	}
+}
+
 
 // set the board as user presses keys
 $('body').keyup(function( event ) {
@@ -187,6 +213,7 @@ $('body').keyup(function( event ) {
 		setBoard();
 	} else if ( event.which == 32 ) { // Space
 		// player makes attack
+		handleAttack();
 		console.log("attack")
 		setBoard();
 	} else if ( event.which == 73 ) { // I
@@ -204,11 +231,6 @@ $('body').keyup(function( event ) {
 	}
 });
 
-// on page load, set the board
-$(document).ready(function () {
-	initBoard();
-});
-
 ///////////////////////////////////////////////////////////
 // Monster Functions
 // check if there is a player in the area
@@ -221,7 +243,7 @@ function isCreature(x, y, type) {
 	if (y < 1 || y > (canvasHeight / pieceSize)-1) {
 		return false;
 	}
-	// console.log(board)
+
 	if (board[y][x] == type) {
 		return true;
 	} else {
@@ -240,7 +262,7 @@ function searchAround(radius, creature) {
 		for (var j = -radius; j < radius; j++) {
 			// console.log((creature.x+i) + " , " + (creature.y+j))
 			if (isCreature(creature.x+i, creature.y+j, 1)) {
-				console.log((creature.x+i) + " , " + (creature.y+j))
+				// console.log((creature.x+i) + " , " + (creature.y+j))
 				nearby.push({
 					"x": creature.x+i, 
 					"y": creature.y+j,
@@ -307,3 +329,54 @@ function moveMonster(creature) {
 		creature.y = end[1];
 	}
 }
+
+
+///////////////////////////////////////////////////////////
+
+function convertToCanvas() {
+	for (var i = 0; i < board.length; i++) {
+		for (var j = 0; j < board[i].length; j++) {
+			switch ( board[i][j] ) {
+				case 0: // blank
+					ctx = displayArea.context;
+					ctx.fillStyle = "white"
+					ctx.fillRect(j*30, i*30, pieceSize, pieceSize); // x, y, width, height
+					break;
+				case 1: // player
+					ctx = displayArea.context;
+					ctx.fillStyle = "red"
+					ctx.fillRect(j*30, i*30, pieceSize, pieceSize); // x, y, width, height
+					break;
+				case 2: // monster
+					ctx = displayArea.context;
+					ctx.fillStyle = "green"
+					ctx.fillRect(j*30, i*30, pieceSize, pieceSize); // x, y, width, height
+					break;
+				case 3: // wall
+					ctx = displayArea.context;
+					ctx.fillStyle = "black"
+					ctx.fillRect(j*30, i*30, pieceSize, pieceSize); // x, y, width, height
+					break;
+				case 4:
+					ctx = displayArea.context;
+					ctx.fillStyle = "blue"
+					ctx.fillRect(j*30, i*30, pieceSize, pieceSize); // x, y, width, height
+					break;
+				default:
+					ctx = displayArea.context;
+					ctx.fillStyle = 
+					ctx.fillRect(j*30, i*30, pieceSize, pieceSize); // x, y, width, height
+					break;
+			}
+		}
+	}
+	displayArea.grid()
+}
+
+
+
+$(document).ready(function () {
+	displayArea.start();
+	displayArea.clear();
+	initBoard();
+})

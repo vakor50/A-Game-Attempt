@@ -24,7 +24,6 @@
 		var canvasHeight = 270;
 		var pieceSize = 30;
 	</script>
-	<script type="text/javascript" src="js/functions.js"></script>
 	<script type="text/javascript">
 		var myGamePiece;
 
@@ -44,6 +43,7 @@
 			},
 			clear : function() {
 				this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+				// draw lines on grid
 				for (var i = 0; i < canvasWidth + pieceSize; i += pieceSize) {
 					this.context.beginPath();
 					this.context.moveTo(i,0);
@@ -58,6 +58,8 @@
 				}
 			}
 		}
+
+
 
 		function startGame() {
 			myGamePiece = new component(pieceSize, pieceSize, "red", 0, 0);
@@ -114,30 +116,32 @@
 			myGamePiece.speedY = 0;
 		}
 		$(document).ready(function () {
-			startGame();
+			// startGame();
 
-			var xTriggered = 0
-			$('body').keyup(function( event ) {
-				xTriggered++;
-				var msg = "Handler for .keyup() called " + xTriggered + " time(s).";
-				// console.log( msg, "html" );
-				// console.log( event );
-			}).keydown(function( event ) {
-				if ( event.which == 87 ) {
-					moveup()
-					updateGameArea()
-				} else if ( event.which == 83 ) {
-					movedown()
-					updateGameArea()
-				} else if ( event.which == 65 ) {
-					moveleft()
-					updateGameArea()
-				} else if ( event.which == 68 ) {
-					moveright()
-					updateGameArea()
-				}
-			});
+			// var xTriggered = 0
+			// $('body').keyup(function( event ) {
+			// 	xTriggered++;
+			// 	var msg = "Handler for .keyup() called " + xTriggered + " time(s).";
+			// 	// console.log( msg, "html" );
+			// 	// console.log( event );
+			// }).keydown(function( event ) {
+			// 	if ( event.which == 87 ) {
+			// 		moveup()
+			// 		updateGameArea()
+			// 	} else if ( event.which == 83 ) {
+			// 		movedown()
+			// 		updateGameArea()
+			// 	} else if ( event.which == 65 ) {
+			// 		moveleft()
+			// 		updateGameArea()
+			// 	} else if ( event.which == 68 ) {
+			// 		moveright()
+			// 		updateGameArea()
+			// 	}
+			// });
 		});
 	</script>
+	<script type="text/javascript" src="js/display.js"></script>
+	<script type="text/javascript" src="js/functions.js"></script>
 </body>
 </html>
