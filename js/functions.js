@@ -1,11 +1,21 @@
-class Player {
-	constructor() {
-		this.x = 1;
-		this.y = 1;
+class Creature {
+	constructor(x, y, name, type, health, armor, attack, damage) {
+		this.x = x;
+		this.y = y;
+		this.name = name;
+		this.type = type;
+		this.health = health;
+		this.armor = armor;
+		this.attack = attack;
+		this.damage = damage;
+	}
+	logPrint() {
+		console.log(this.name + "(" + this.type + "): " + this.health + "hp");
+		console.log("AC: " + this.armor + ", +" + this.attack + " to hit, +" + this.damage + " damage")
 	}
 }
 
-var p = new Player();
+var p = new Creature(1,1,"Player",1,10,10,2,2);
 
 var numMonsters = 3;
 var monsters = [];
@@ -87,9 +97,11 @@ function setPiece(x, y, type) {
 function setBoard() {
 	clearBoard();
 	setPiece(p.x, p.y, "player")
+	p.logPrint();
 	for (var i = 0; i < monsters.length; i++) {
 		moveMonster(monsters[i])
 		setPiece(monsters[i].x, monsters[i].y, "monster")
+		monsters[i].logPrint();
 	}
 	
 	logBoard();
@@ -102,9 +114,13 @@ function initBoard() {
 	setPiece(p.x, p.y, "player")
 
 	for (var i = 0; i < numMonsters; i++) {
-		var m = new Player();
-		m.x = Math.floor( Math.random() * ((canvasWidth / pieceSize)/2 - 1) + (canvasWidth / pieceSize)/2)
-		m.y = Math.floor( Math.random() * ((canvasHeight / pieceSize) - 2) + 1)
+		var mx = Math.floor( Math.random() * ((canvasWidth / pieceSize)/2 - 1) + (canvasWidth / pieceSize)/2)
+		var my = Math.floor( Math.random() * ((canvasHeight / pieceSize) - 2) + 1)
+		var mh = 10; // health
+		var mac = 10; // armor
+		var matk = 2; // attack
+		var mdmg = 2; // damage
+		var m = new Creature(mx, my, "monster" + i, 2, mh, mac, matk, mdmg);
 		monsters.push(m);
 		setPiece(m.x, m.y, "monster")
 	}
@@ -171,6 +187,8 @@ $('body').keyup(function( event ) {
 		setBoard();
 	} else if ( event.which == 32 ) { // Space
 		// player makes attack
+		console.log("attack")
+		setBoard();
 	} else if ( event.which == 73 ) { // I
 		// 
 	} else if ( event.which == 79 ) { // O
@@ -194,7 +212,7 @@ $(document).ready(function () {
 ///////////////////////////////////////////////////////////
 // Monster Functions
 // check if there is a player in the area
-function isPlayer(x, y) {
+function isCreature(x, y, type) {
 	// console.log(x + " / " + ((canvasWidth / pieceSize)-1))
 	// console.log(y + " / " + ((canvasHeight / pieceSize)-1))
 	if (x < 1 || x > (canvasWidth / pieceSize)-1) {
@@ -204,18 +222,15 @@ function isPlayer(x, y) {
 		return false;
 	}
 	// console.log(board)
-	switch(board[y][x]) {
-		case 3: // Wall
-			return false;
-		case 2: // Monster
-			return false;
-		case 1: // Player
-			return true;
-		case 0: // Empty
-			return false;
-		default:
-			return false;
+	if (board[y][x] == type) {
+		return true;
+	} else {
+		return false;
 	}
+		// case 3: // Wall
+		// case 2: // Monster
+		// case 1: // Player
+		// case 0: // Empty
 }
 
 // search the radius of creature to look for a player
@@ -224,7 +239,7 @@ function searchAround(radius, creature) {
 	for (var i = -radius; i < radius; i++) {
 		for (var j = -radius; j < radius; j++) {
 			// console.log((creature.x+i) + " , " + (creature.y+j))
-			if (isPlayer(creature.x+i,creature.y+j)) {
+			if (isCreature(creature.x+i, creature.y+j, 1)) {
 				console.log((creature.x+i) + " , " + (creature.y+j))
 				nearby.push({
 					"x": creature.x+i, 
