@@ -1,6 +1,7 @@
 # A-Game-Attempt
 
 Working on a simple 2D game where player can move an icon with WASD.
+'Space' bar performs an attack
 
 Goals:
 - Monsters can detect if player is nearby and move towards it

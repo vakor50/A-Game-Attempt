@@ -15,6 +15,7 @@ class Creature {
 	}
 }
 
+var playerHealthMax = 10;
 var p = new Creature(1,1,"Player",1,10,10,2,2);
 
 var numMonsters = 1;
@@ -130,10 +131,26 @@ function initBoard() {
 	convertToCanvas();
 }
 
+function performAttack(source, target) {
+	var randomize = Math.floor( Math.random() * 20 ) + 1;	// Random number from 1-20
+	var output = "Rolled a " + (randomize + source.attack) + " to hit! ";
+	if (randomize + source.attack > target.armor) {
+		output += source.name + " hit the " + target.name + "!"
+		target.health -= source.damage;
+	} else {
+		output += source.name + " missed the " + target.name + "."
+	}
+
+	if (target.health <= 0) {
+		output += " The " + target.name + " has been defeated."
+	}
+	$('#output').prepend(output)
+}
 
 
 ///////////////////////////////////////////////////////////
 // Player Functions
+
 // check if the coordinates in the board are open
 function isOpenPos(x, y) {
 	if (x < 0 && x >= canvasWidth / pieceSize) {
@@ -165,7 +182,9 @@ function handleAttack() {
 				for (var k = 0; k < monsters.length; k++) {
 					// attack the first monster next to player
 					if (monsters[k].x == p.x+i && monsters[k].y == p.y+j) {
-						monsters[k].health -= p.damage;
+						performAttack(p, monsters[k])
+						// monsters[k].health -= p.damage;
+
 						// if monster health drops below 0, delete it.
 						if (monsters[k].health <= 0) {
 							monsters.splice(k, 1)
@@ -188,28 +207,28 @@ $('body').keyup(function( event ) {
 		if (isOpenPos(p.x, p.y-1)) {
 			p.y -= 1
 		}
-		console.log("up")
+		$('#output').prepend("Moved up.")
 		setBoard();
 	} else if ( event.which == 83 ) { // S
 		// down
 		if (isOpenPos(p.x, p.y+1)) {
 			p.y += 1
 		}
-		console.log("down")
+		$('#output').prepend("Moved down.")
 		setBoard();
 	} else if ( event.which == 65 ) { // A
 		// left
 		if (isOpenPos(p.x-1, p.y)) {
 			p.x -= 1
 		}
-		console.log("left")
+		$('#output').prepend("Moved left.")
 		setBoard();
 	} else if ( event.which == 68 ) { // D
 		// right
 		if (isOpenPos(p.x+1, p.y)) {
 			p.x += 1
 		}
-		console.log("right")
+		$('#output').prepend("Moved right.")
 		setBoard();
 	} else if ( event.which == 32 ) { // Space
 		// player makes attack
@@ -294,6 +313,12 @@ function moveTowards(source, target) {
 
 // perform movement towards player, otherwise move randomly
 function moveMonster(creature) {
+	var search = searchAround(1, creature);
+	for (var i = 0; i < search.length; i++) {
+		if (search[i].type == 1) {
+			performAttack(creature, p)
+		}
+	}
 	var search = searchAround(4, creature);
 	var hasMoved = false;
 	for (var i = 0; i < search.length; i++) {
