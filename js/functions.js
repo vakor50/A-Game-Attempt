@@ -144,7 +144,7 @@ function performAttack(source, target) {
 	if (target.health <= 0) {
 		output += " The " + target.name + " has been defeated."
 	}
-	$('#output').prepend(output)
+	$('#output').prepend("<p>" + output + "</p>")
 }
 
 
@@ -207,28 +207,28 @@ $('body').keyup(function( event ) {
 		if (isOpenPos(p.x, p.y-1)) {
 			p.y -= 1
 		}
-		$('#output').prepend("Moved up.")
+		$('#output').prepend("<p>Moved up.</p>")
 		setBoard();
 	} else if ( event.which == 83 ) { // S
 		// down
 		if (isOpenPos(p.x, p.y+1)) {
 			p.y += 1
 		}
-		$('#output').prepend("Moved down.")
+		$('#output').prepend("<p>Moved down.</p>")
 		setBoard();
 	} else if ( event.which == 65 ) { // A
 		// left
 		if (isOpenPos(p.x-1, p.y)) {
 			p.x -= 1
 		}
-		$('#output').prepend("Moved left.")
+		$('#output').prepend("<p>Moved left.</p>")
 		setBoard();
 	} else if ( event.which == 68 ) { // D
 		// right
 		if (isOpenPos(p.x+1, p.y)) {
 			p.x += 1
 		}
-		$('#output').prepend("Moved right.")
+		$('#output').prepend("<p>Moved right.</p>")
 		setBoard();
 	} else if ( event.which == 32 ) { // Space
 		// player makes attack

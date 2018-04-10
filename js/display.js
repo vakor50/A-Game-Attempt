@@ -4,7 +4,7 @@ var displayArea = {
 		this.canvas.width = canvasWidth;
 		this.canvas.height = canvasHeight;
 		this.context = this.canvas.getContext("2d");
-		document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+		// document.body.insertBefore(this.canvas, document.body.childNodes[0]);
 		// this.interval = setInterval(updateGameArea, 20);
 		// updateGameArea();
 	},
